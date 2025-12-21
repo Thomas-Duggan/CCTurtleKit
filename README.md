@@ -2,7 +2,7 @@
 
 A header file that can be imported using:
 ```
-local cct = require("CCTurtleKit")
+local cctk = require("CCTurtleKit")
 ```
 
 ## Issues
