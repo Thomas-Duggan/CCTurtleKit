@@ -1,7 +1,7 @@
 ## Purpose
 
 A header file that can be imported using:
-`local cct = require("CCTurtleKit")`
+```local cct = require("CCTurtleKit")```
 
 
 ## Issues
