@@ -6,7 +6,12 @@ local t = turtle ---redefinition
 local sh = shell ---redefiniton
 local fctnList = {} ---module table for importing
 
--------------- Aliases --------------
+currentX = 0 ---relative coordinates of turtle (use overloaded movement functions, or they will not work correctly)
+currentY = 0 
+currentZ = 0
+currentDirection = "+y"
+
+-------------- Aliases and Information --------------
 sh.setAlias('c','clear')
 sh.setAlias('q','exit')
 sh.setAlias('h','help')
@@ -16,16 +21,81 @@ sh.setAlias('man','help')
 sh.setAlias('xed','edit')
 sh.setAlias('vim','edit')
 
+term.clear()
+term.setCursorPos(1,1)
+local id = os.getComputerID()
+print("Computer #"..id.." is currently operating.")
+print("(Hold CTRL+T stop operation.)")
+
+-------------- Overloaded Movement Functions --------------
+function fctnList.up() ---these must be used in replacement of default movement functions in order for returnHome to work properly
+    t.up()
+    currentZ = currentZ + 1
+end                   
+
+function fctnList.down()
+    t.down()
+    currentZ = currentZ - 1
+end
+
+function fctnList.forward()
+    t.forward()
+    if currentDirection == "+x" then
+        currentX = currentX + 1
+    elseif currentDirection == "-y" then
+        currentY = currentY - 1
+    elseif currentDirection == "-x" then
+        currentX = currentX - 1
+    elseif currentDirection == "+y" then
+        currentY = currentY + 1
+    end
+end
+
+function fctnList.back()
+    t.back()
+    if currentDirection == "+x" then
+        currentX = currentX - 1
+    elseif currentDirection == "-y" then
+        currentY = currentY + 1
+    elseif currentDirection == "-x" then
+        currentX = currentX + 1
+    elseif currentDirection == "+y" then
+        currentY = currentY - 1
+    end
+end
+
+function fctnList.turnRight()
+    t.turnRight()
+    if currentDirection == "+x" then
+        currentDirection = "+y"
+    elseif currentDirection == "+y" then
+        currentDirection = "-x"
+    elseif currentDirection == "-x" then
+        currentDirection = "-y"
+    elseif currentDirection == "-y" then
+        currentDirection = "+x"
+    end
+end
+
+function fctnList.turnLeft()
+    t.turnLeft()
+    if currentDirection == "+x" then
+        currentDirection = "-y"
+    elseif currentDirection == "-y" then
+        currentDirection = "-x"
+    elseif currentDirection == "-x" then
+        currentDirection = "+y"
+    elseif currentDirection == "+y" then
+        currentDirection = "+x"
+    end
+end
+
 -------------- Functions --------------
 function fctnList.fuelCheck(fuelMinimum, fuelSlots)
 
-    ---Default Values
-    fuelMinimum = fuelMinimum or 100
-    fuelSlots = fuelSlots or {13, 14, 15, 16} --bottom 4 slots
-
     ---Failsafes
     if type(fuelSlots) ~= "table" then
-        fuelSlots = {13, 14, 15, 16}
+        fuelSlots = {13, 14, 15, 16} ---bottom 4
     end
 
     if type(fuelMinimum) ~= "number" then
@@ -45,13 +115,16 @@ function fctnList.fuelCheck(fuelMinimum, fuelSlots)
                     t.refuel()
                 end
                 t.select(previousSlot)
-                break
+                return true
             end
         end
+        return false
     end
 end
 
 function fctnList.mineSquare(width, height, direction)
+    
+    local cctk = fctnList
 
     ---Failsafes
     if type(height) ~= "number" or height % 2 ~= 0 then
@@ -136,6 +209,8 @@ end
 
 function fctnList.mineTree(replant)
 
+    local cctk = fctnList
+
     ---Failsafe
     if type(replant) ~= "boolean" then
         replant = false
@@ -150,19 +225,19 @@ function fctnList.mineTree(replant)
     ---Movement Function Overloads
     local function up()
         t.digUp()
-        t.up()
+        cctk.up()
         zOffset = zOffset + 1
     end
 
     local function down()
         t.digDown()
-        t.down()
+        cctk.down()
         zOffset = zOffset - 1
     end
 
     local function forward()
         t.dig()
-        t.forward()
+        cctk.forward()
         if direction == "+x" then
             xOffset = xOffset + 1
         elseif direction == "-y" then
@@ -175,7 +250,7 @@ function fctnList.mineTree(replant)
     end
 
     local function turnRight()
-        t.turnRight()
+        cctk.turnRight()
         if direction == "+x" then
             direction = "+y"
         elseif direction == "+y" then
@@ -188,7 +263,7 @@ function fctnList.mineTree(replant)
     end
 
     local function turnLeft()
-        t.turnLeft()
+        cctk.turnLeft()
         if direction == "+x" then
             direction = "-y"
         elseif direction == "-y" then
@@ -284,7 +359,6 @@ function fctnList.mineTree(replant)
             rotations = rotations +1
             if rotations >= 4 then
                 rotations = 0
-                print(false)
                 return false
             else
                 scan(memory)
@@ -377,5 +451,31 @@ function fctnList.mineTree(replant)
         end
     end
 end
+
+function fctnList.transfer(method,slots)
+
+    ---Failsafes
+    if type(method) ~= "string" then ---Accepts: store and take
+        method = "store"
+    end
+
+    if type(slots) ~= "table" then
+        slots = {1, 2,  3,  4, ---All but bottom 4 slots
+                 5, 6,  7,  8,
+                 9, 10, 11, 12} 
+    end
+
+    ---Logic
+        if currentX ~=0 then 
+        end
+        success, block = t.inspect()
+
+        if success and string.find(block.name,"chest") then
+            return true
+        else
+            return false
+        end  
+    end
+
 
 return fctnList
