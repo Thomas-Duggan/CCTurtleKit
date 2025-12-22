@@ -6,7 +6,6 @@ local t = turtle ---redefinition
 local sh = shell ---redefiniton
 local fctnList = {} ---module table for importing
 
-
 -------------- Aliases --------------
 sh.setAlias('c','clear')
 sh.setAlias('q','exit')
@@ -135,42 +134,44 @@ function fctnList.mineSquare(width, height, direction)
     end
 end
 
-function fctnList.mineTree()
+function fctnList.mineTree(replant)
+
+    ---Failsafe
+    if type(replant) ~= "boolean" then
+        replant = false
+    end
 
     ---Initial position
     local xOffset = 0 ---front and back
     local yOffset = 0 ---left and right
     local zOffset = 0 ---up and down
-    local direction = "+x"
+    local direction = "+y"
 
-    ---Helper Functions
-    local function lookingAtLog(direction)
-
-        if direction == "front" then
-            success, block = t.inspect()
-        end
-        if direction == "down" then
-            success, block = t.inspectDown()
-        end
-        if direction == "up" then
-            success, block = t.inspectUp()
-        end
-
-        if success and string.find(block.name,"log") then
-            return true
-        else
-            return false
-        end  
-    end
-
+    ---Movement Function Overloads
     local function up()
+        t.digUp()
         t.up()
         zOffset = zOffset + 1
     end
 
     local function down()
+        t.digDown()
         t.down()
         zOffset = zOffset - 1
+    end
+
+    local function forward()
+        t.dig()
+        t.forward()
+        if direction == "+x" then
+            xOffset = xOffset + 1
+        elseif direction == "-y" then
+            yOffset = yOffset - 1
+        elseif direction == "-x" then
+            xOffset = xOffset - 1
+        elseif direction == "+y" then
+            yOffset = yOffset + 1
+        end
     end
 
     local function turnRight()
@@ -199,49 +200,92 @@ function fctnList.mineTree()
         end
     end
 
-    local function forward()
-        t.forward()
-        if direction == "+x" then
-            xOffset = xOffset + 1
-        elseif direction == "-y" then
-            yOffset = yOffset - 1
-        elseif direction == "-x" then
-            xOffset = xOffset - 1
-        elseif direction == "+y" then
-            yOffset = yOffset + 1
+    ---Helper Functions
+    local function lookingAtLog(direction) ---Accepts: "front", "down", "up"
+
+        if direction == "front" then
+            success, block = t.inspect()
         end
+        if direction == "down" then
+            success, block = t.inspectDown()
+        end
+        if direction == "up" then
+            success, block = t.inspectUp()
+        end
+
+        if success and string.find(block.name,"log") then
+            return true
+        else
+            return false
+        end  
     end
 
-    local function backward()
-        t.backward()
-        if direction == "+x" then
-            xOffset = xOffset - 1
-        elseif direction == "-y" then
-            yOffset = yOffset + 1
-        elseif direction == "-x" then
-            xOffset = xOffset + 1
-        elseif direction == "+y" then
-            yOffset = yOffset - 1
+    local trunkXOffset = 0
+    local trunkYOffset = 0
+    local function goToTrunk()
+
+        if yOffset < trunkYOffset then
+            while direction ~= "+y" do
+                turnRight()
+            end
+            while yOffset < trunkYOffset do
+                t.dig()
+                forward()
+            end
+        elseif yOffset > trunkYOffset then
+            while direction ~= "-y" do
+                turnRight()
+            end
+            while yOffset > trunkYOffset do
+                t.dig()
+                forward()
+            end
         end
+
+        if xOffset < trunkXOffset then
+            while direction ~= "+x" do
+                turnRight()
+            end
+            while xOffset < trunkXOffset do
+                t.dig()
+                forward()
+            end
+        elseif xOffset > trunkXOffset then
+            while direction ~= "-x" do
+                turnRight()
+            end
+            while xOffset > trunkXOffset do
+                t.dig()
+                forward()
+            end
+        end
+
+        while zOffset ~= 0 do
+            t.digDown()
+            down()
+        end      
     end
 
-    branchZValues = {}
-    rotations = 0
-    local function scan(memory)
+    local branchZValues = {}
+    local rotations = 0
+    local function scan(memory) ---Accepts: true or false
 
         if lookingAtLog("front") == true and memory == true then
             branchZValues[#branchZValues+1] = zOffset
             rotations = 0
             return true
+
         elseif lookingAtLog("front") == true and memory == false then
             rotations = 0
             return true
+
         else
             turnRight()
             rotations = rotations +1
-            if rotations >= 3 then
+            if rotations >= 4 then
                 rotations = 0
-                return true
+                print(false)
+                return false
             else
                 scan(memory)
             end
@@ -253,116 +297,85 @@ function fctnList.mineTree()
             t.digUp()
             up()
             branchRemover()
-        elseif scan(false) == true then
+        elseif lookingAtLog("front") == true then
             t.dig()
             forward()
             branchRemover()
         else
-            return
+            t.digUp()
+            up()
+            if lookingAtLog("front") == true then
+                branchRemover()
+            else
+                return
+            end
         end
     end
 
-
-    ------------------- Logic -------------------
-    local trunkXValue = 0
-    local trunkYValue = 0
-    local trunkTop = 0
-
-    if lookingAtLog("front") == true then
+    ---Logic 
+    if lookingAtLog("front") then
         t.dig()
         forward()
-        trunkXValue = xOffset
-        trunkYValue = yOffset
-        t.digUp()
-        up()
-        t.digUp()
-        up()
-    end
+        trunkXOffset = xOffset
+        trunkYOffset = yOffset
 
-    while lookingAtLog("up") == true do
+        while lookingAtLog("up") do ---removes the main trunk
+            t.digUp()
+            up()
+            scan(true)
+        end
+        t.digUp() ---checks one block above trunk for acacia trees
+        up()
         scan(true)
-        t.digUp()
-        up()
-    end
-    scan(true)
-    trunkTop = zOffset
-    for i=#branchZValues, 1, -1  do 
-        local goal = branchZValues[i]
+
+        goToTrunk()
         
-        while zOffset ~= goal do
-            down()
+        for i=1, #branchZValues do ---removes branches
+            for i=1, branchZValues[i] do
+                up()
+            end
+            scan(false)
+            branchRemover()
+            goToTrunk()
         end
-
-        branchRemover()
-
-        sleep(10)
-
-        if xOffset > trunkXValue then
-            while direction ~= "-x" do
-                turnRight()
-            end
-            while xOffset > trunkXValue do
-                t.dig()
-                forward()
-            end
-
-        elseif xOffset < trunkXValue then
-            while direction ~= "+x" do
-                turnRight()
-            end
-            while xOffset < trunkXValue do
-                t.dig()
-                forward()
-            end
+        while direction ~= "+y" do
+            turnLeft()
         end
-
-        
-        if yOffset > trunkYValue then
-            while direction ~= "-Y" do
-                turnRight()
-            end
-            while yOffset > trunkYValue do
-                t.dig()
-                forward()
-            end
-
-        elseif yOffset < trunkYValue then
-            while direction ~= "+y" do
-                turnRight()
-            end
-            while yOffset < trunkYValue do
-                t.dig()
-                forward()
-            end
-        end
-
-        while zOffset < trunkTop do up() end
-        while zOffset > trunkTop do down() end    
-    end        
-
-    for i = 1, zOffset do
-        down()
+        t.back()
     end
 
-    while direction ~= "+x" do
-        t.turnRight()
+    if replant == true then
+        success, block = t.inspect()
+        if success ~= true then
+            previousSlot = t.getSelectedSlot()
+            for i=1, 16 do
+                item = t.getItemDetail(i)
+                if item ~= nil then
+                    if string.find(item.name,"sapling") then
+                        t.select(i)
+                        t.place()
+                        t.select(previousSlot)
+                        break
+                    end
+                end
+            end
+        elseif string.find(block.name,"sapling") then
+            previousSlot = t.getSelectedSlot()
+            for i=1, 16 do
+                item = t.getItemDetail(i)
+                if item ~= nil then
+                    if string.find(item.name,"bone_meal") then
+                        t.select(i)
+                        while lookingAtLog("front") == false do
+                            t.place()
+                        end
+                        t.select(previousSlot)
+                        break
+                    end
+                end
+            end
+        end
     end
-    if trunkXValue == 1 then
-        backward()
-    elseif trunkXValue == -1 then
-        forward()
-    elseif trunkYValue == 1 then
-        t.turnRight()
-        backward()
-        t.turnLeft()
-    elseif trunkYValue == -1 then
-        t.turnRight()
-        forward()
-        t.turnLeft()
-        t.turnLeft()
-    end
-    
-    print(true)
 end
 
 return fctnList
