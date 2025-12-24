@@ -14,7 +14,8 @@ This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusive
 ## Implementation Examples
 <details>
 <summary>Click me!</summary>
-(Preamble: comments `---` do not need to be typed)
+  
+**(Preamble: comments `---` do not need to be typed)**
   
 ### Automatic Tree Farm
   
