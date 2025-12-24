@@ -54,7 +54,7 @@ while true do
 
     if cctk.storageFull(usedSlots) == true then ---Once the storage is full
         cctk.returnHome() ---Return to location where script was activated
-        cctk.store() ---Deposit all items
+        cctk.store(usedSlots) ---Deposit all items
         cctk.backToWork() ---Return to where it was last mining
     end
 end
