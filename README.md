@@ -16,6 +16,8 @@ This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusive
 <summary>Click me!</summary>
   
 **Preamble: comments (** `---this is a comment` **) do not need to be typed for proper functionality**
+
+Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with CCTurtleKit.lua
   
 ### Automatic Tree Farm
   
