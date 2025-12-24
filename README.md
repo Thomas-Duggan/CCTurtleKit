@@ -10,7 +10,7 @@ Note: run "import" and drag and drop the file into Minecraft to import header fi
 
 Note for `startup.lua`: This file is NOT neccessary for proper usage of `CCTurtleKit.lua`. It is exclusively for ease of setup and ease of use. It is only required if you want it. 
 
-**IMPORTANT: IF YOU HAVE AN EXISTING `startup.lua` DO NOT IMPORT MINE AS IT WILL OVERWRITE YOURS.**
+**IMPORTANT: IF YOU HAVE AN EXISTING `startup.lua` DO NOT IMPORT MINE AS IT __WILL__ OVERWRITE YOURS.**
 
 ## Implementation Examples
 <details>
