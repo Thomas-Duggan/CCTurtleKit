@@ -37,7 +37,7 @@ while true do
     cctk.fuelCheck(100,fuelSlots) ---If fuel is below 100, take fuel from the last slot and refuel
 end
 ```
-Inventory layout: Slot 1: Saplings (any kind); Slot 2: Bone meal; Slot 15: Coal 
+Inventory layout: Slot 1: Saplings (anything besides dark oak); Slot 2: Bone meal; Slot 15: Coal 
 
 Physical layout: A dirt block in front and down 1 block for the sapling and a chest directly behind the turtle
 
