@@ -20,7 +20,8 @@ This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusive
 ```
 local cctk = require("CCTurtleKit")
 
-usedSlots = {5,  6,  7,  8,
+usedSlots = {            4,
+             5,  6,  7,  8,
              9,  10, 11, 12,
              13, 14, 15    }
 
@@ -29,13 +30,11 @@ fuelSlots = {16}
 while true do
     cctk.mineTree(true) ---Mines a tree and replants the sapling
     cctk.fuelCheck(100,fuelSlots) ---If fuel is below 100, take fuel from the last slot and refuel
-
-    if cctk.storageFull(usedSlots) == true then ---Once the storage is full,
-       cctk.store(usedSlots) ---Stores all items but the first, second, and last
+    cctk.store(usedSlots) ---Stores all items but the first, second, and last
     end
 end
 ```
-Inventory layout: Slots 1-4: Saplings (NOT DARK OAK), and Bone meal; Slot 15: Coal 
+Inventory layout: Slot 1: Saplings (NOT DARK OAK), Slots 2-3: and Bone meal; Slot 15: Coal 
 
 Physical layout: A dirt block in front and down 1 block for the sapling and a chest directly behind the turtle. Make sure the turtle has a diamond axe.
 
