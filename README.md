@@ -29,6 +29,7 @@ fuelSlots = {16}
 while true do
     cctk.mineTree(true) ---Mines a tree and replants the sapling
     cctk.fuelCheck(100,fuelSlots) ---If fuel is below 100, take fuel from the last slot and refuel
+
     if cctk.storageFull(usedSlots) == true then ---Once the storage is full,
        cctk.store(usedSlots) ---Stores all items but the first, second, and last
     end
