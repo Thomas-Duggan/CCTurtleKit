@@ -4,7 +4,7 @@ A header file that can be used in other scripts by typing this at the top of the
 ```
 local cctk = require("CCTurtleKit")
 ```
-Note: run "import" and drag and drop the file into Minecraft to import header file
+Note: run "import" and drag and drop the file into Minecraft to import header file.
 
 ---
 
