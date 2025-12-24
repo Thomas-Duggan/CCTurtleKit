@@ -4,11 +4,15 @@
 ---Aliases
 shell.setAlias('c','clear')
 shell.setAlias('q','exit')
+shell.setAlias('r','reboot')
+
 shell.setAlias('h','help')
 shell.setAlias('man','help')
+
 shell.setAlias('e','edit')
 shell.setAlias('xed','edit')
 shell.setAlias('vim','edit')
+
 shell.setAlias('g','go')
 shell.setAlias('move','go')
 shell.setAlias('m','go')
