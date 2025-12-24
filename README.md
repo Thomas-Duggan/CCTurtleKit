@@ -11,10 +11,6 @@ Note for startup.lua:
 
 This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusively for ease of setup and ease of use. **IF YOU HAVE AN EXISTING startup.lua DO NOT IMPORT MINE AS IT WILL OVERWRITE YOURS.**
 
-## Issues
-
-- HIGHLY UNFINISHED
-
 ## Implementation Examples
 <details>
 <summary>Click me!</summary>
