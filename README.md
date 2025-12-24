@@ -4,7 +4,7 @@ A header file that can be imported using:
 ```
 local cctk = require("CCTurtleKit")
 ```
-Note: run "import" and drag and drop the file into Minecraft to import into other files
+Note: run "import" and drag and drop the file into Minecraft to import header file
 
 
 Note for startup.lua:
