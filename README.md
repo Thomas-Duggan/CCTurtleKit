@@ -8,7 +8,7 @@ Note: run "import" and drag and drop the file into Minecraft to import header fi
 
 ---
 
-Note for startup.lua: This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusively for ease of setup and ease of use. 
+Note for `startup.lua`: This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusively for ease of setup and ease of use. 
 
 **IF YOU HAVE AN EXISTING startup.lua DO NOT IMPORT MINE AS IT WILL OVERWRITE YOURS.**
 
@@ -18,7 +18,7 @@ Note for startup.lua: This file is NOT neccessary for proper usage of CCTurtleKi
   
 **Preamble: comments (** `---this is a comment` **) do not need to be typed for proper functionality.**
 
-Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with CCTurtleKit.lua. However, it is possible to type this virbatim, but it may be difficult to do so.
+Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with `CCTurtleKit.lua`. However, it is possible to type this virbatim, but it may be difficult to do so.
   
 ### Automatic Tree Farm
   
