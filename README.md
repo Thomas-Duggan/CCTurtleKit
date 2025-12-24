@@ -28,8 +28,10 @@ fuelSlots = {16}
 
 while true do
     cctk.mineTree(true) ---Mines a tree and replants the sapling
-    cctk.store(usedSlots) ---Stores all items but the first, second, and last
     cctk.fuelCheck(100,fuelSlots) ---If fuel is below 100, take fuel from the last slot and refuel
+    if cctk.storageFull(usedSlots) == true then ---Once the storage is full,
+       cctk.store(usedSlots) ---Stores all items but the first, second, and last
+    end
 end
 ```
 Inventory layout: Slots 1-4: Saplings (NOT DARK OAK), and Bone meal; Slot 15: Coal 
@@ -52,7 +54,7 @@ while true do
     cctk.forward()  ---Moves forward after mining (MUST USE cctk.forward(), NOT turtle.forward() !!!)
     cctk.fuelCheck(100, fuelSlots) ---If fuel is below 100, take fuel from the last 4 slots and refuel
 
-    if cctk.storageFull(usedSlots) == true then ---Once the storage is full
+    if cctk.storageFull(usedSlots) == true then ---Once the storage is full,
         cctk.returnHome() ---Return to location where script was activated
         cctk.store(usedSlots) ---Deposit all items
         cctk.backToWork() ---Return to where it was last mining
