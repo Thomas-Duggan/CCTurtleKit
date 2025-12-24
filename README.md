@@ -17,7 +17,7 @@ This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusive
   
 **Preamble: comments (** `---this is a comment` **) do not need to be typed for proper functionality.**
 
-Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with CCTurtleKit.lua, however it is possible to type this virbatim but it may be difficult to do so.
+Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with CCTurtleKit.lua. However, it is possible to type this virbatim, but it may be difficult to do so.
   
 ### Automatic Tree Farm
   
