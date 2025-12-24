@@ -6,6 +6,7 @@ local cctk = require("CCTurtleKit")
 ```
 Note: run "import" and drag and drop the file into Minecraft to import header file
 
+---
 
 Note for startup.lua: This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusively for ease of setup and ease of use. 
 
