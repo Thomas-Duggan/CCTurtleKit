@@ -15,10 +15,32 @@ This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusive
 
 - HIGHLY UNFINISHED
 
+<details>
+<summary>**## Implementation Examples**</summary>
+### Automatic Tree Farm
+  
+```
+local cctk = require("CCTurtleKit")
 
-## Created for
+usedSlots = {        3,  4,
+             5,  6,  7,  8,
+             9,  10, 11, 12,
+             13, 14, 15    }
 
-N/A
+fuelSlots = {16}
+
+while true do
+    cctk.mineTree(true) ---Mines a tree and replants the sapling
+    cctk.store(usedSlots) ---Stores all items but the first, second, and last
+    cctk.fuelCheck(100,fuelSlots) ---If fuel is below 100, take fuel from the last slot and refuel
+end
+```
+Inventory layout: Slot 1: Saplings (any kind); Slot 2: Bone meal; Slot 15: Coal 
+
+Physical layout: A dirt block in front and down 1 block for the sapling and a chest directly behind the turtle
+
+</details>
+
 
 ## Copyright
 
