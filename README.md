@@ -15,8 +15,9 @@ This file is NOT neccessary for proper usage of CCTurtleKit.lua. It is exclusive
 
 - HIGHLY UNFINISHED
 
+## Implementation Examples
 <details>
-<summary>**## Implementation Examples**</summary>
+<summary>**Click me!**</summary>
 ### Automatic Tree Farm
   
 ```
