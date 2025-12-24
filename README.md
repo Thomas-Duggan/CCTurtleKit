@@ -1,6 +1,6 @@
 ## Purpose
 
-A header file that can be imported using:
+A header file that can be used in other scripts by typing this at the top of the file:
 ```
 local cctk = require("CCTurtleKit")
 ```
