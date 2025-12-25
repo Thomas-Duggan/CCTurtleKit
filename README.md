@@ -8,7 +8,7 @@ Note: run "import" and drag and drop the file into Minecraft to import header fi
 
 ---
 
-Note for `startup.lua`: This file is NOT neccessary for proper usage of `CCTurtleKit.lua`. It is exclusively for ease of setup and ease of use. It is only required if you want it. 
+Note for `startup.lua`: This file is NOT necessary for proper usage of `CCTurtleKit.lua`. It is exclusively for ease of setup and ease of use. It is only required if you want it. 
 
 **IMPORTANT: IF YOU HAVE AN EXISTING `startup.lua` DO NOT IMPORT MINE AS IT WILL OVERWRITE YOURS.**
 
@@ -18,7 +18,7 @@ Note for `startup.lua`: This file is NOT neccessary for proper usage of `CCTurtl
   
 **Preamble: comments (** `---this is a comment` **) do not need to be typed for proper functionality.**
 
-Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with `CCTurtleKit.lua`. However, it is possible to type this virbatim, but it may be difficult to do so.
+Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with `CCTurtleKit.lua`. However, it is possible to type this verbatim, but it may be difficult to do so.
   
 ### Automatic Tree Farm
   
@@ -38,7 +38,7 @@ while true do
     cctk.store(usedSlots) ---Stores all items but the first, second, and last
 end
 ```
-Inventory layout: Slot 1: Saplings (NOT DARK OAK), Slots 2-3: and Bone meal; Slot 16: Coal 
+Inventory layout: Slot 1: Saplings (NOT DARK OAK), Slots 2-3: Bone meal; Slot 16: Coal 
 
 Physical layout: A dirt block in front and down 1 block for the sapling and a chest directly behind the turtle. Make sure the turtle has a diamond axe.
 
