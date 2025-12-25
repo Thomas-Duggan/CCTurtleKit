@@ -16,7 +16,7 @@ Note for `startup.lua`: This file is NOT necessary for proper usage of `CCTurtle
 <details>
 <summary>Click me!</summary>
   
-**Preamble: comments (** `---this is a comment` **) do not need to be typed for proper functionality.**
+**Preamble: comments (** `---This is a comment` **) do not need to be typed for proper functionality.**
 
 Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with `CCTurtleKit.lua`. However, it is possible to type this verbatim, but it may be difficult to do so.
   
