@@ -26,9 +26,9 @@ Its best to paste these into a .txt file, rename it to a .lua file, then import 
 local cctk = require("CCTurtleKit")
 
 local usedSlots = {            4,
-             5,  6,  7,  8,
-             9,  10, 11, 12,
-             13, 14, 15    }
+                   5,  6,  7,  8,
+                   9,  10, 11, 12,
+                   13, 14, 15    }
 
 local fuelSlots = {16}
 
