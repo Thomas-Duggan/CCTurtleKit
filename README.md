@@ -25,12 +25,12 @@ Its best to paste these into a .txt file, rename it to a .lua file, then import 
 ```
 local cctk = require("CCTurtleKit")
 
-usedSlots = {            4,
+local usedSlots = {            4,
              5,  6,  7,  8,
              9,  10, 11, 12,
              13, 14, 15    }
 
-fuelSlots = {16}
+local fuelSlots = {16}
 
 while true do
     cctk.mineTree(true) ---Mines a tree and replants the sapling
@@ -47,11 +47,11 @@ Physical layout: A dirt block in front and down 1 block for the sapling and a ch
 ```
 local cctk = require("CCTurtleKit")
 
-usedSlots = {1,  2,  3,  4,
+local usedSlots = {1,  2,  3,  4,
              5,  6,  7,  8,
              9,  10, 11, 12}
 
-fuelSlots = {13, 14, 15, 16}
+local fuelSlots = {13, 14, 15, 16}
 
 while true do
     cctk.mineSquare(3,4,"left") ---Mines a 3 wide by 4 high hole (NOTE: HEIGHT MUST BE AN EVEN NUMBER)
