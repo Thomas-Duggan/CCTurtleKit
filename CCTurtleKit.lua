@@ -11,21 +11,19 @@ currentY = 0
 currentZ = 0
 currentDirection = "+y"
 
--------------- Aliases and Information --------------
-sh.setAlias('c','clear')
-sh.setAlias('q','exit')
-sh.setAlias('h','help')
-sh.setAlias('r','reboot')
-sh.setAlias('e','edit')
-sh.setAlias('man','help')
-sh.setAlias('xed','edit')
-sh.setAlias('vim','edit')
+backupX = 0 ---updatible relative coordinates of turtle
+backupY = 0 
+backupZ = 0
+backupDirection = "+y"
 
-term.clear()
-term.setCursorPos(1,1)
-local id = os.getComputerID()
-print("Computer #"..id.." is currently operating.")
-print("(Hold CTRL+T stop operation.)")
+-------------- Status Information --------------
+fctnList.disableOperationMessage = false ---Status can be disable if you want
+if fctnList.disableOperationMessage == false then
+    shell.run('clear')
+    local id = os.getComputerID()
+    print("Computer #"..id.." is currently operating")
+    print("(Hold CTRL+T stop operation)")
+end
 
 -------------- Overloaded Movement Functions --------------
 function fctnList.up() ---these must be used in replacement of default movement functions in order for returnHome to work properly
@@ -95,7 +93,7 @@ function fctnList.fuelCheck(fuelMinimum, fuelSlots)
 
     ---Failsafes
     if type(fuelSlots) ~= "table" then
-        fuelSlots = {13, 14, 15, 16} ---bottom 4
+        fuelSlots = {15, 16} ---last 2
     end
 
     if type(fuelMinimum) ~= "number" then
@@ -452,30 +450,187 @@ function fctnList.mineTree(replant)
     end
 end
 
-function fctnList.transfer(method,slots)
+function fctnList.store(slots)
 
-    ---Failsafes
-    if type(method) ~= "string" then ---Accepts: store and take
-        method = "store"
-    end
+    backupDirection = currentDirection
 
+    ---Failsafe
     if type(slots) ~= "table" then
-        slots = {1, 2,  3,  4, ---All but bottom 4 slots
-                 5, 6,  7,  8,
-                 9, 10, 11, 12} 
+        slots = {1,  2,  3,  4, ---All but last 2 slots
+                 5,  6,  7,  8,
+                 9,  10, 11, 12,
+                 13, 14} 
     end
 
-    ---Logic
-        if currentX ~=0 then 
-        end
+    ---Helper Function
+    local previousSlot = t.getSelectedSlot() ---saves previous slot
+    local rotations = 0
+    local function doTheThing()
+
         success, block = t.inspect()
 
         if success and string.find(block.name,"chest") then
-            return true
+            for i=1, #slots do
+                t.select(slots[i])
+                local item = t.getItemDetail()
+                if item ~= nil then
+                    t.drop(item.count)
+                end
+            end
+            t.select(previousSlot)
+            while currentDirection ~= backupDirection do
+                fctnList.turnLeft()
+            end
+            return
         else
-            return false
+            rotations = rotations +1
+            if rotations <= 4 then
+                fctnList.turnRight()
+                doTheThing()
+            else
+                while currentDirection ~= backupDirection do
+                    fctnList.turnLeft()
+                end
+                return
+            end
         end  
     end
 
+    ---Logic
+    doTheThing()
+end
+
+function fctnList.returnHome()
+
+    ---Logic
+    backupX = currentX
+    backupY = currentY
+    backupZ = currentZ
+    backupDirection = currentDirection
+
+    if currentY < 0 then
+        while currentDirection ~= "+y" do
+            fctnList.turnRight()
+        end
+        while currentY < 0 do
+            t.dig()
+            fctnList.forward()
+        end
+    elseif currentY > 0 then
+        while currentDirection ~= "-y" do
+            fctnList.turnRight()
+        end
+        while currentY > 0 do
+            t.dig()
+            fctnList.forward()
+        end
+    end
+
+    if currentX < 0 then
+        while currentDirection ~= "+x" do
+            fctnList.turnRight()
+        end
+        while currentX < 0 do
+            t.dig()
+            fctnList.forward()
+        end
+    elseif currentX > 0 then
+        while currentDirection ~= "-x" do
+            fctnList.turnRight()
+        end
+        while currentX > 0 do
+            t.dig()
+            fctnList.forward()
+        end
+    end
+
+    while currentZ ~= 0 do
+        t.digDown()
+        fctnList.down()
+    end 
+
+    while currentDirection ~= "+y" do
+        fctnList.turnLeft()
+    end
+end
+
+function fctnList.backToWork()
+
+    ---Logic
+    if currentY < backupY then
+        while currentDirection ~= backupDirection do
+            fctnList.turnRight()
+        end
+        while currentY < backupY do
+            t.dig()
+            fctnList.forward()
+        end
+    elseif currentY > backupY then
+        while currentDirection ~= backupDirection do
+            fctnList.turnRight()
+        end
+        while currentY > backupY do
+            t.dig()
+            fctnList.forward()
+        end
+    end
+
+    if currentX < backupX then
+        while currentDirection ~= backupDirection do
+            fctnList.turnRight()
+        end
+        while currentX < backupX do
+            t.dig()
+            fctnList.forward()
+        end
+    elseif currentX > backupX then
+        while currentDirection ~= backupDirection do
+            fctnList.turnRight()
+        end
+        while currentX > backupX do
+            t.dig()
+            fctnList.forward()
+        end
+    end
+
+    while currentZ ~= backupZ do
+        t.digDown()
+        fctnList.down()
+    end 
+
+    while currentDirection ~= backupDirection do
+        fctnList.turnLeft()
+    end
+end
+
+function fctnList.storageFull(slots)
+
+    ---Failsafe
+    if type(slots) ~= "table" then
+        slots = {1,  2,  3,  4, ---All but bottom 4 slots
+                 5,  6,  7,  8,
+                 9,  10, 11, 12,
+                 13, 14} 
+    end
+
+    ---Logic
+    local slotsFull = 0
+    local previousSlot = t.getSelectedSlot() ---saves previous slot
+
+    for i=1, #slots do
+        t.select(slots[i])
+        local item = t.getItemDetail()
+        if item ~= nil then
+            slotsFull = slotsFull +1
+        end
+    end
+    if slotsFull == #slots then
+        t.select(previousSlot)
+        return true
+    else
+        t.select(previousSlot)
+        return false
+    end      
+end
 
 return fctnList
