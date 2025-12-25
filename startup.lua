@@ -21,9 +21,11 @@ shell.setAlias('m','go')
 shell.run('c')
 local id = os.getComputerID()
 print("Computer #"..id.." is now online")
+print()
 print("Please enter a label for Computer #"..id..":")
+print("(Note: Pressing Enter skips labeling)")
 local label = io.read()
-if label == "" then
+if label == "" then 
     print("Computer label not updated")
 else
     shell.run("label set \""..label.."\"")
