@@ -38,7 +38,7 @@ while true do
     cctk.store(usedSlots) ---Stores all items but the first, second, and last
 end
 ```
-Inventory layout: Slot 1: Saplings (NOT DARK OAK), Slots 2-3: and Bone meal; Slot 15: Coal 
+Inventory layout: Slot 1: Saplings (NOT DARK OAK), Slots 2-3: and Bone meal; Slot 16: Coal 
 
 Physical layout: A dirt block in front and down 1 block for the sapling and a chest directly behind the turtle. Make sure the turtle has a diamond axe.
 
