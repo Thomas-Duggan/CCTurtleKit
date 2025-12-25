@@ -36,7 +36,6 @@ while true do
     cctk.mineTree(true) ---Mines a tree and replants the sapling
     cctk.fuelCheck(100,fuelSlots) ---If fuel is below 100, take fuel from the last slot and refuel
     cctk.store(usedSlots) ---Stores all items but the first, second, and last
-    end
 end
 ```
 Inventory layout: Slot 1: Saplings (NOT DARK OAK), Slots 2-3: and Bone meal; Slot 15: Coal 
