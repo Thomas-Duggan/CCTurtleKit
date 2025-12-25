@@ -59,7 +59,7 @@ while true do
     cctk.fuelCheck(100, fuelSlots) ---If fuel is below 100, take fuel from the last 4 slots and refuel
 
     if cctk.storageFull(usedSlots) == true then ---Once the storage is full,
-        cctk.returnHome() ---Return to location where script was activated
+        cctk.returnHome() ---Return to location where turtle was placed
         cctk.store(usedSlots) ---Deposit all items
         cctk.backToWork() ---Return to where it was last mining
     end
