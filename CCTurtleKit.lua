@@ -1,6 +1,9 @@
 --- CCTurtleKit  Copyright (c) 2026 Thomas Duggan 
 --- This work is licenced under CC BY-SA 4.0 
 
+--- TO FiX:
+--- mineTree() does not account for multiple branches on the same Z level
+
 -------------- Preamble --------------
 local t = turtle ---redefinition
 local sh = shell ---redefiniton
