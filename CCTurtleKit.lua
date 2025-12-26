@@ -16,13 +16,18 @@ backupY = 0
 backupZ = 0
 backupDirection = "+y"
 
--------------- Status Information --------------
+-------------- Status and Refueling --------------
 fctnList.disableOperationMessage = false ---Status can be disable if you want
 if fctnList.disableOperationMessage == false then
     shell.run('clear')
     local id = os.getComputerID()
     print("Computer #"..id.." is currently operating")
     print("(Hold CTRL+T stop operation)")
+end
+
+ftcnList.disableRefuelOnStart = false
+if fctnList.disableRefuelOnStart == false then
+    shell.run('refuels')
 end
 
 -------------- Overloaded Movement Functions --------------
