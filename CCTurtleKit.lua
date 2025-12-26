@@ -1,79 +1,98 @@
 --- CCTurtleKit  Copyright (c) 2026 Thomas Duggan 
 --- This work is licenced under CC BY-SA 4.0 
 
---- TO FiX:
+--- To Fix:
 --- mineTree() does not account for multiple branches on the same Z level
 --- Make sure refuel on start works as expected
---- ADD note about mathimatical coordinate system
 --- Finish sweep (rename vacumn to sweep) function
 
 -------------- Preamble --------------
 local t = turtle ---redefinition
 local sh = shell ---redefiniton
-local fctnList = {} ---module table for importing
+local cctk = {} ---module table for importing
+
 
 currentX = 0 ---relative coordinates of turtle (use overloaded movement functions, or they will not work correctly)
 currentY = 0 
 currentZ = 0
 currentDirection = "+y"
 
-backupX = 0 ---updatible relative coordinates of turtle
+backupX = 0 ---stored relative coordinates of turtle for returning to the value
 backupY = 0 
 backupZ = 0
 backupDirection = "+y"
 
--------------- Status and Refueling --------------
-fctnList.disableOperationMessage = false ---Status can be disable if you want
-if fctnList.disableOperationMessage == false then
+--- Please note that my coordiate system uses the mathematical standard, where:
+---     +X = right    -X = left
+---     +Y = forward  -Y = backward
+---     +Z = up       -Z = down
+--- More importantly, this is NOT the Minecraft standard and may require getting used to if not familiar with it.
+
+
+-------------- Status Information --------------
+cctk.disableOperationMessage = false ---Status can be disable if you want
+if cctk.disableOperationMessage == false then
     shell.run('clear')
     local id = os.getComputerID()
     print("Computer #"..id.." is currently operating")
     print("(Hold CTRL+T stop operation)")
 end
 
-ftcnList.disableRefuelOnStart = false
-if fctnList.disableRefuelOnStart == false then
-    shell.run('refuels')
+cctk.disableRefuelOnStart = false
+if cctk.disableRefuelOnStart == false then
+    shell.run('refuel')
 end
 
 -------------- Overloaded Movement Functions --------------
-function fctnList.up() ---these must be used in replacement of default movement functions in order for returnHome to work properly
-    t.up()
-    currentZ = currentZ + 1
+function cctk.up() ---these must be used in replacement of default movement functions in order for returnHome to work properly
+    if t.up() then
+        currentZ = currentZ + 1
+        return true
+    end
+    return false
 end                   
 
-function fctnList.down()
-    t.down()
-    currentZ = currentZ - 1
-end
-
-function fctnList.forward()
-    t.forward()
-    if currentDirection == "+x" then
-        currentX = currentX + 1
-    elseif currentDirection == "-y" then
-        currentY = currentY - 1
-    elseif currentDirection == "-x" then
-        currentX = currentX - 1
-    elseif currentDirection == "+y" then
-        currentY = currentY + 1
+function cctk.down()
+    if t.down() then
+        currentZ = currentZ - 1
+        return true
     end
+    return false
 end
 
-function fctnList.back()
-    t.back()
-    if currentDirection == "+x" then
-        currentX = currentX - 1
-    elseif currentDirection == "-y" then
-        currentY = currentY + 1
-    elseif currentDirection == "-x" then
-        currentX = currentX + 1
-    elseif currentDirection == "+y" then
-        currentY = currentY - 1
+function cctk.forward()
+    if t.forward() then
+        if currentDirection == "+x" then
+            currentX = currentX + 1
+        elseif currentDirection == "-y" then
+            currentY = currentY - 1
+        elseif currentDirection == "-x" then
+            currentX = currentX - 1
+        elseif currentDirection == "+y" then
+            currentY = currentY + 1
+        end
+        return true
     end
+    return false
 end
 
-function fctnList.turnRight()
+function cctk.back()
+    if t.back() then
+        if currentDirection == "+x" then
+            currentX = currentX - 1
+        elseif currentDirection == "-y" then
+            currentY = currentY + 1
+        elseif currentDirection == "-x" then
+            currentX = currentX + 1
+        elseif currentDirection == "+y" then
+            currentY = currentY - 1
+        end
+        return true
+    end
+    return false
+end
+
+function cctk.turnRight()
     t.turnRight()
     if currentDirection == "+x" then
         currentDirection = "+y"
@@ -84,9 +103,10 @@ function fctnList.turnRight()
     elseif currentDirection == "-y" then
         currentDirection = "+x"
     end
+    return true
 end
 
-function fctnList.turnLeft()
+function cctk.turnLeft()
     t.turnLeft()
     if currentDirection == "+x" then
         currentDirection = "-y"
@@ -97,10 +117,11 @@ function fctnList.turnLeft()
     elseif currentDirection == "+y" then
         currentDirection = "+x"
     end
+    return true
 end
 
 -------------- Functions --------------
-function fctnList.fuelCheck(fuelMinimum, fuelSlots)
+function cctk.fuelCheck(fuelMinimum, fuelSlots)
 
     ---Failsafes
     if type(fuelSlots) ~= "table" then
@@ -131,9 +152,9 @@ function fctnList.fuelCheck(fuelMinimum, fuelSlots)
     end
 end
 
-function fctnList.mineSquare(width, height, direction)
+function cctk.mineSquare(width, height, direction)
     
-    local cctk = fctnList
+    local cctk = cctk
 
     ---Failsafes
     if type(height) ~= "number" or height % 2 ~= 0 then
@@ -159,18 +180,18 @@ function fctnList.mineSquare(width, height, direction)
     local function mineWidth(direction, _width)
         if direction == "left" then
             for i=1, _width do
-                t.turnLeft()
+                cctk.turnLeft()
                 t.dig()
-                t.forward()
-                t.turnRight()
+                cctk.forward()
+                cctk.turnRight()
                 t.dig()
             end
         elseif direction == "right" then
             for i=1, _width do
-                t.turnRight()
+                cctk.turnRight()
                 t.dig()
-                t.forward()
-                t.turnLeft()
+                cctk.forward()
+                cctk.turnLeft()
                 t.dig()
             end
         end
@@ -180,45 +201,45 @@ function fctnList.mineSquare(width, height, direction)
     t.dig()
     t.digUp()
     for i=1, height-2 do
-        t.up()
+        cctk.up()
         t.dig()
         t.digUp()
     end
-    t.up()
+    cctk.up()
     t.dig()
 
     mineWidth(direction, width-1) --first block is mined out already
     t.digDown()
-    t.down()
+    cctk.down()
     t.dig()
     mineWidth(otherDirection, width-2) --first column is disregarded and first block is mined out already
 
     for i=1, math.floor(height/2)-1 do
         t.digDown()
-        t.down()
+        cctk.down()
         t.dig()
         mineWidth(direction, width-2)
         t.digDown()
-        t.down()
+        cctk.down()
         t.dig()
         mineWidth(otherDirection, width-2)
     end
     if width ~= 1 then
         if direction == "left" then
-            t.turnRight()
-            t.forward()
-            t.turnLeft()
+            cctk.turnRight()
+            cctk.forward()
+            cctk.turnLeft()
         elseif direction == "right" then
-            t.turnLeft()
-            t.forward()
-            t.turnRight()
+            cctk.turnLeft()
+            cctk.forward()
+            cctk.turnRight()
         end
     end
 end
 
-function fctnList.mineTree(replant)
+function cctk.mineTree(replant)
 
-    local cctk = fctnList
+    local cctk = cctk
 
     ---Failsafe
     if type(replant) ~= "boolean" then
@@ -288,13 +309,13 @@ function fctnList.mineTree(replant)
     local function lookingAtLog(direction) ---Accepts: "front", "down", "up"
 
         if direction == "front" then
-            success, block = t.inspect()
+            local success, block = t.inspect()
         end
         if direction == "down" then
-            success, block = t.inspectDown()
+            local success, block = t.inspectDown()
         end
         if direction == "up" then
-            success, block = t.inspectUp()
+            local success, block = t.inspectUp()
         end
 
         if success and string.find(block.name,"log") then
@@ -428,7 +449,9 @@ function fctnList.mineTree(replant)
     end
 
     if replant == true then
-        success, block = t.inspect()
+
+        local success, block = t.inspect()
+
         if success ~= true then
             previousSlot = t.getSelectedSlot()
             for i=1, 16 do
@@ -442,7 +465,7 @@ function fctnList.mineTree(replant)
                     end
                 end
             end
-        elseif string.find(block.name,"sapling") then
+        elseif block == true and string.find(block.name,"sapling") then
             previousSlot = t.getSelectedSlot()
             for i=1, 16 do
                 item = t.getItemDetail(i)
@@ -461,7 +484,7 @@ function fctnList.mineTree(replant)
     end
 end
 
-function fctnList.store(slots)
+function cctk.store(slots)
 
     backupDirection = currentDirection
 
@@ -478,7 +501,7 @@ function fctnList.store(slots)
     local rotations = 0
     local function doTheThing()
 
-        success, block = t.inspect()
+        local success, block = t.inspect()
 
         if success and string.find(block.name,"chest") then
             for i=1, #slots do
@@ -490,17 +513,17 @@ function fctnList.store(slots)
             end
             t.select(previousSlot)
             while currentDirection ~= backupDirection do
-                fctnList.turnLeft()
+                cctk.turnLeft()
             end
             return
         else
             rotations = rotations +1
             if rotations <= 4 then
-                fctnList.turnRight()
+                cctk.turnRight()
                 doTheThing()
             else
                 while currentDirection ~= backupDirection do
-                    fctnList.turnLeft()
+                    cctk.turnLeft()
                 end
                 return
             end
@@ -511,7 +534,7 @@ function fctnList.store(slots)
     doTheThing()
 end
 
-function fctnList.returnHome()
+function cctk.returnHome()
 
     ---Logic
     backupX = currentX
@@ -521,100 +544,100 @@ function fctnList.returnHome()
 
     if currentY < 0 then
         while currentDirection ~= "+y" do
-            fctnList.turnRight()
+            cctk.turnRight()
         end
         while currentY < 0 do
             t.dig()
-            fctnList.forward()
+            cctk.forward()
         end
     elseif currentY > 0 then
         while currentDirection ~= "-y" do
-            fctnList.turnRight()
+            cctk.turnRight()
         end
         while currentY > 0 do
             t.dig()
-            fctnList.forward()
+            cctk.forward()
         end
     end
 
     if currentX < 0 then
         while currentDirection ~= "+x" do
-            fctnList.turnRight()
+            cctk.turnRight()
         end
         while currentX < 0 do
             t.dig()
-            fctnList.forward()
+            cctk.forward()
         end
     elseif currentX > 0 then
         while currentDirection ~= "-x" do
-            fctnList.turnRight()
+            cctk.turnRight()
         end
         while currentX > 0 do
             t.dig()
-            fctnList.forward()
+            cctk.forward()
         end
     end
 
     while currentZ ~= 0 do
         t.digDown()
-        fctnList.down()
+        cctk.down()
     end 
 
     while currentDirection ~= "+y" do
-        fctnList.turnLeft()
+        cctk.turnLeft()
     end
 end
 
-function fctnList.backToWork()
+function cctk.backToWork()
 
     ---Logic
     if currentY < backupY then
         while currentDirection ~= backupDirection do
-            fctnList.turnRight()
+            cctk.turnRight()
         end
         while currentY < backupY do
             t.dig()
-            fctnList.forward()
+            cctk.forward()
         end
     elseif currentY > backupY then
         while currentDirection ~= backupDirection do
-            fctnList.turnRight()
+            cctk.turnRight()
         end
         while currentY > backupY do
             t.dig()
-            fctnList.forward()
+            cctk.forward()
         end
     end
 
     if currentX < backupX then
         while currentDirection ~= backupDirection do
-            fctnList.turnRight()
+            cctk.turnRight()
         end
         while currentX < backupX do
             t.dig()
-            fctnList.forward()
+            cctk.forward()
         end
     elseif currentX > backupX then
         while currentDirection ~= backupDirection do
-            fctnList.turnRight()
+            cctk.turnRight()
         end
         while currentX > backupX do
             t.dig()
-            fctnList.forward()
+            cctk.forward()
         end
     end
 
     while currentZ ~= backupZ do
         t.digDown()
-        fctnList.down()
+        cctk.down()
     end 
 
     while currentDirection ~= backupDirection do
-        fctnList.turnLeft()
+        cctk.turnLeft()
     end
 end
 
-function fctnList.storageFull(slots)
+function cctk.storageFull(slots)
 
     ---Failsafe
     if type(slots) ~= "table" then
@@ -644,4 +667,29 @@ function fctnList.storageFull(slots)
     end      
 end
 
-return fctnList
+function cctk.vacumn(X,Y,spin)
+
+    ---Failsafes
+    if type(X) ~= "number" then
+        height = 0
+    end
+
+    if type(Y) ~= "number" then
+        width = 0
+    end
+
+    if type(Y) ~= "bool" then
+        width = true
+    end
+
+    ---Logic
+    backupX = currentX
+    backupY = currentY
+    backupDirection = currentDirection
+
+    while currentY <= Y do
+        cctk.forward()
+    end
+end
+
+return cctk
