@@ -3,6 +3,9 @@
 
 --- TO FiX:
 --- mineTree() does not account for multiple branches on the same Z level
+--- Make sure refuel on start works as expected
+--- ADD note about mathimatical coordinate system
+--- Finish sweep (rename vacumn to sweep) function
 
 -------------- Preamble --------------
 local t = turtle ---redefinition
