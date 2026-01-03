@@ -28,18 +28,15 @@ backupDirection = "+y"
 ---     +Z = up       -Z = down
 --- More importantly, this is NOT the Minecraft standard and may require getting used to if not familiar with it.
 
-
 -------------- Status Information --------------
-cctk.disableOperationMessage = false ---Status can be disable if you want
-if cctk.disableOperationMessage == false then
-    shell.run('clear')
-    local id = os.getComputerID()
-    print("Computer #"..id.." is currently operating")
-    print("(Hold CTRL+T stop operation)")
-end
 
-cctk.disableRefuelOnStart = false
-if cctk.disableRefuelOnStart == false then
+shell.run('clear')
+local id = os.getComputerID()
+print("Computer #"..id.." is currently operating")
+print("(Hold CTRL+T stop operation)")
+
+
+if fs.exists("/rom/programs/refuel") then
     shell.run('refuel')
 end
 
@@ -691,5 +688,242 @@ function cctk.vacumn(X,Y,spin)
         cctk.forward()
     end
 end
+
+function cctk.jukebox(folderName)
+
+    ---Variables
+    local dataFile = "df.txt" 
+
+    local songs = {}
+    local songLength = -1
+
+    local songID = -1
+    local nextSongID = -1
+
+
+    ---Failsafes
+    if type(folderName) ~= "string" then
+        folderName = "music"
+    end
+
+
+    ---Helper Functions
+    local function queueSpecific()
+    end
+
+    local function play(song)
+        local speaker = peripheral.find("speaker")
+        shell.run("speaker play "..folderName.."/"..song)
+    end
+
+    local function handleInput(song)
+        shell.run('clear')
+        print("Playing: "..song)
+        print()
+        print("Options:")
+        print()
+        print("   n: Next song        r: Repeat current song")
+        print()
+        print("   s: Stop playback    q: Queue specific song")
+        print()
+        print()
+        print("   g: Get all available songs (requires Printer)")
+        print()
+        print("   e: Exit to terminal")
+        print()
+        print()
+        write("Awaiting letter > ")
+        while true do
+            local input = read()
+
+
+            if input == "n" then --- Next Song
+                os.reboot()
+
+            elseif input == "r" then --- queue current song
+                local file = fs.open(dataFile,"w") 
+                file.write(songID)
+                file.close()
+                nextSongID = songID
+                print(" Current song queued!")
+                sleep(1)
+                handleInput(song)
+
+            elseif input == "s" then --- Stop playback
+                local monitor = peripheral.find("monitor")
+                monitor.clear()
+                monitor.setCursorPos(99,99)
+                os.shutdown()
+                
+            elseif input == "q" then --- Queue specific song
+                queueSpecific()
+                handleInput(song)
+
+            elseif input == "g" then --- Get all available songs
+                print(" Printing")
+                local printer = peripheral.find("printer")
+                printer.newPage()
+                local line = 1
+                for i=1, #songs do
+                    printer.setCursorPos(1,line)
+                    printer.write(songs[i])
+                    line = line +1
+                    
+                    if i%20 == 0 then
+                        printer.newPage()
+                        line = 0
+                    end
+
+                end
+                sleep(1)
+                print(" Done!")
+                sleep(0.5)
+                handleInput(song)
+            
+            elseif input == "e" then --- exit to terminal
+                shell.run("clear")
+                print("Reboot to continue listening.")
+                print("(Your queue has been saved)")
+                print()
+                print("      --======= DISREGARD ERROR: =======--")
+                jukebox.closed() --Fake function that fails at runtime, forcing the terminal to open
+
+            else
+                print(" Input unknown")
+                sleep(1)
+                handleInput(song)
+            end
+        end
+    end
+
+    local function display(song, songLength)
+        local monitor = peripheral.find("monitor")
+        if monitor ~= nil then
+            local cursorY = 1
+
+            local splicedSongName = {}
+            for i=1, #song do                
+                splicedSongName[i] = song:sub(i,i)
+            end
+            for i = 1, 6 do
+                table.remove(splicedSongName, #splicedSongName)
+            end
+            splicedSongName[#splicedSongName+1] = ' '
+
+            monitor.clear()
+
+            local function mPrint(text)
+                monitor.setCursorPos(1, cursorY)
+                monitor.write(text)
+                cursorY = cursorY + 1
+            end
+
+            local minutesTotal = math.floor(songLength / 60)
+            local secondsTotal = math.floor(songLength % 60)
+
+            for timeElapsed = 1, (songLength +6)*2 do
+                local progressRatio = (timeElapsed/2)/songLength
+                local minutesElapsed = math.floor((timeElapsed/2) / 60)
+                local secondsElapsed = math.floor((timeElapsed/2) % 60)
+
+                local partitions = {}
+                local step = songLength / 20
+                for i = 1, 20 do
+                    table.insert(partitions, math.floor(i * step))
+                end
+
+                mPrint("")
+                monitor.setCursorPos(1, cursorY)
+                for i=1, #splicedSongName do
+                    monitor.write(splicedSongName[i])
+                end
+                cursorY = cursorY + 1
+                mPrint("")
+                mPrint("")
+                mPrint(
+                    minutesElapsed..":"..(secondsElapsed < 10 and "0" .. secondsElapsed or secondsElapsed)
+                    .."                     "..
+                    minutesTotal..":"..(secondsTotal < 10 and "0" .. secondsTotal or secondsTotal)
+                )
+                mPrint("")
+                mPrint(string.rep("#", progressRatio*30)..string.rep("-", 30-progressRatio*30))
+                mPrint("") 
+                mPrint("") 
+                mPrint("")
+                mPrint("")
+                mPrint("Up next: "..songs[nextSongID])
+
+                local first = table.remove(splicedSongName, 1) --shifts song name to imitate scrolling
+                table.insert(splicedSongName, first)
+                
+                cursorY = 1
+                sleep(0.5)
+            end
+        else
+            sleep(songLength)
+        end
+        cctk.music(folderName)
+    end
+
+
+    ---Logic
+    for i, file in ipairs(fs.list(folderName)) do ---Saves songs + files to list
+        if file:match("%.dfpwm$") then
+            table.insert(songs, file)
+        end
+    end
+    print(#songs.." songs loaded")
+
+    if fs.exists(dataFile) == false then ---Failsafe in case file DNE
+        print()
+        print("ERROR: storage file "..dataFile.." does not exist!")
+        print()
+        print("Please press Win+E and go to this path:")
+        print("C:\\Users\\<YourUsername>\\Documents\\CurseForge\\")
+        print("  instances\\<ModpackName>\\minecraft\\saves\\")
+        print("    <WorldName>\\computercraft\\computer\\"..id)
+        print()
+        print("Then, create a new text file named: "..dataFile)
+        print()
+        print("Once complete, enter command 'reboot'")
+
+    else
+        local file = fs.open(dataFile,"r")
+        songID = tonumber(file.readAll())
+        file.close()
+        if songID == '' then --- if file is empty, choose a random song
+            songID = math.random(1, #songs)
+        end
+
+        local file = fs.open(dataFile,"w") ---Writes next song to file
+        nextSongID = math.random(1, #songs)
+        while nextSongID == songID do ---prevents queuing the same song twice
+            nextSongID = math.random(1, #songs)
+        end
+        file.write(nextSongID)
+        file.close()
+
+        -- Determining song length
+        --print(songs[songID]) --FOR TESTING ONLY
+        --print(folderName.."/"..songs[songID]) --FOR TESTING ONLY
+        local f = fs.open(folderName.."/"..songs[songID], "rb")
+        local size = -1
+        while f.read(16384) do
+            size = size + 16384
+        end
+        f.close()
+        songLength = size * 8 / 48000
+
+
+        parallel.waitForAny( ---Run music, input, and display concurrently
+            function() play(songs[songID]) end,
+            function() handleInput(songs[songID]) end,
+            function() display(songs[songID], songLength) end
+        )
+        sleep(0.5)
+        os.reboot()
+    end
+end
+
 
 return cctk
