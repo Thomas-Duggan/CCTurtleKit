@@ -42,7 +42,8 @@ end
 
 -------------- Overloaded Movement Functions --------------
 function cctk.up() ---these must be used in replacement of default movement functions in order for returnHome to work properly
-    if t.up() then
+    if t.inspectUp() == false then
+        t.up()
         currentZ = currentZ + 1
         return true
     end
@@ -50,7 +51,8 @@ function cctk.up() ---these must be used in replacement of default movement func
 end                   
 
 function cctk.down()
-    if t.down() then
+    if t.inspectDown() == false then
+        t.down()
         currentZ = currentZ - 1
         return true
     end
@@ -58,7 +60,8 @@ function cctk.down()
 end
 
 function cctk.forward()
-    if t.forward() then
+    if t.inspect() == false then
+        t.forward()
         if currentDirection == "+x" then
             currentX = currentX + 1
         elseif currentDirection == "-y" then
@@ -74,7 +77,12 @@ function cctk.forward()
 end
 
 function cctk.back()
-    if t.back() then
+    cctk.turnRight()
+    cctk.turnRight()
+    if t.inspect() == false then
+        cctk.turnRight()
+        cctk.turnRight()
+        t.back()
         if currentDirection == "+x" then
             currentX = currentX - 1
         elseif currentDirection == "-y" then
@@ -86,6 +94,8 @@ function cctk.back()
         end
         return true
     end
+    cctk.turnRight()
+    cctk.turnRight()
     return false
 end
 
@@ -236,83 +246,32 @@ end
 
 function cctk.mineTree(replant)
 
-    local cctk = cctk
+    ---Local Global Variables
+    backupX = currentX
+    backupY = currentY
+    backupZ = currentZ
+    backupDirection = currentDirection
+    local trunkXOffset = 0
+    local trunkYOffset = 0
 
     ---Failsafe
     if type(replant) ~= "boolean" then
         replant = false
     end
 
-    ---Initial position
-    local xOffset = 0 ---front and back
-    local yOffset = 0 ---left and right
-    local zOffset = 0 ---up and down
-    local direction = "+y"
-
-    ---Movement Function Overloads
-    local function up()
-        t.digUp()
-        cctk.up()
-        zOffset = zOffset + 1
-    end
-
-    local function down()
-        t.digDown()
-        cctk.down()
-        zOffset = zOffset - 1
-    end
-
-    local function forward()
-        t.dig()
-        cctk.forward()
-        if direction == "+x" then
-            xOffset = xOffset + 1
-        elseif direction == "-y" then
-            yOffset = yOffset - 1
-        elseif direction == "-x" then
-            xOffset = xOffset - 1
-        elseif direction == "+y" then
-            yOffset = yOffset + 1
-        end
-    end
-
-    local function turnRight()
-        cctk.turnRight()
-        if direction == "+x" then
-            direction = "+y"
-        elseif direction == "+y" then
-            direction = "-x"
-        elseif direction == "-x" then
-            direction = "-y"
-        elseif direction == "-y" then
-            direction = "+x"
-        end
-    end
-
-    local function turnLeft()
-        cctk.turnLeft()
-        if direction == "+x" then
-            direction = "-y"
-        elseif direction == "-y" then
-            direction = "-x"
-        elseif direction == "-x" then
-            direction = "+y"
-        elseif direction == "+y" then
-            direction = "+x"
-        end
-    end
-
     ---Helper Functions
+    local success = nil
+    local block = nil
     local function lookingAtLog(direction) ---Accepts: "front", "down", "up"
 
         if direction == "front" then
-            local success, block = t.inspect()
+            success, block = t.inspect()
         end
         if direction == "down" then
-            local success, block = t.inspectDown()
+            success, block = t.inspectDown()
         end
         if direction == "up" then
-            local success, block = t.inspectUp()
+            success, block = t.inspectUp()
         end
 
         if success and string.find(block.name,"log") then
@@ -322,49 +281,51 @@ function cctk.mineTree(replant)
         end  
     end
 
-    local trunkXOffset = 0
-    local trunkYOffset = 0
     local function goToTrunk()
 
-        if yOffset < trunkYOffset then
-            while direction ~= "+y" do
-                turnRight()
+        if currentY < trunkYOffset then
+            while currentDirection ~= "+y" do
+                cctk.turnRight()
             end
-            while yOffset < trunkYOffset do
+            while currentY < trunkYOffset do
                 t.dig()
-                forward()
+                cctk.forward()
             end
-        elseif yOffset > trunkYOffset then
-            while direction ~= "-y" do
-                turnRight()
+
+        elseif currentY > trunkYOffset then
+            while currentDirection ~= "-y" do
+                cctk.turnRight()
             end
-            while yOffset > trunkYOffset do
+            while currentY > trunkYOffset do
                 t.dig()
-                forward()
+                cctk.forward()
             end
         end
 
-        if xOffset < trunkXOffset then
-            while direction ~= "+x" do
-                turnRight()
+        
+        if currentX < trunkXOffset then
+            while currentDirection ~= "+x" do
+                cctk.turnRight()
             end
-            while xOffset < trunkXOffset do
+            while currentX < trunkXOffset do
                 t.dig()
-                forward()
+                cctk.forward()
             end
-        elseif xOffset > trunkXOffset then
-            while direction ~= "-x" do
-                turnRight()
+
+        elseif currentX > trunkXOffset then
+            while currentDirection ~= "-x" do
+                cctk.turnRight()
             end
-            while xOffset > trunkXOffset do
+            while currentX > trunkXOffset do
                 t.dig()
-                forward()
+                cctk.forward()
             end
         end
 
-        while zOffset ~= 0 do
+
+        while currentZ ~= backupZ do
             t.digDown()
-            down()
+            cctk.down()
         end      
     end
 
@@ -373,7 +334,7 @@ function cctk.mineTree(replant)
     local function scan(memory) ---Accepts: true or false
 
         if lookingAtLog("front") == true and memory == true then
-            branchZValues[#branchZValues+1] = zOffset
+            branchZValues[#branchZValues+1] = currentZ
             rotations = 0
             return true
 
@@ -382,7 +343,7 @@ function cctk.mineTree(replant)
             return true
 
         else
-            turnRight()
+            cctk.turnRight()
             rotations = rotations +1
             if rotations >= 4 then
                 rotations = 0
@@ -396,15 +357,15 @@ function cctk.mineTree(replant)
     local function branchRemover()
         if lookingAtLog("up") == true then
             t.digUp()
-            up()
+            cctk.up()
             branchRemover()
         elseif lookingAtLog("front") == true then
             t.dig()
-            forward()
+            cctk.forward()
             branchRemover()
         else
             t.digUp()
-            up()
+            cctk.up()
             if lookingAtLog("front") == true then
                 branchRemover()
             else
@@ -414,42 +375,42 @@ function cctk.mineTree(replant)
     end
 
     ---Logic 
-    if lookingAtLog("front") then
+    if lookingAtLog("front") == true then
         t.dig()
-        forward()
-        trunkXOffset = xOffset
-        trunkYOffset = yOffset
+        cctk.forward()
+        trunkXOffset = currentX
+        trunkYOffset = currentY
 
         while lookingAtLog("up") do ---removes the main trunk
             t.digUp()
-            up()
+            cctk.up()
             scan(true)
         end
         t.digUp() ---checks one block above trunk for acacia trees
-        up()
+        cctk.up()
         scan(true)
 
         goToTrunk()
         
         for i=1, #branchZValues do ---removes branches
             for i=1, branchZValues[i] do
-                up()
+                cctk.up()
             end
             scan(false)
             branchRemover()
             goToTrunk()
         end
-        while direction ~= "+y" do
-            turnLeft()
+        while currentDirection ~= "+y" do
+            cctk.turnLeft()
         end
-        t.back()
+        cctk.back()
     end
 
     if replant == true then
 
         local success, block = t.inspect()
 
-        if success ~= true then
+        if success == false then
             previousSlot = t.getSelectedSlot()
             for i=1, 16 do
                 item = t.getItemDetail(i)
@@ -462,7 +423,7 @@ function cctk.mineTree(replant)
                     end
                 end
             end
-        elseif block == true and string.find(block.name,"sapling") then
+        elseif success == true and string.find(block.name,"sapling") then
             previousSlot = t.getSelectedSlot()
             for i=1, 16 do
                 item = t.getItemDetail(i)
@@ -691,7 +652,7 @@ end
 
 function cctk.jukebox(folderName)
 
-    ---Variables
+    ---Local Global Variables
     local dataFile = "df.txt" 
 
     local songs = {}
