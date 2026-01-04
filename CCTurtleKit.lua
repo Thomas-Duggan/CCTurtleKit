@@ -708,9 +708,6 @@ function cctk.jukebox(folderName)
 
 
     ---Helper Functions
-    local function queueSpecific()
-    end
-
     local function play(song)
         local speaker = peripheral.find("speaker")
         shell.run("speaker play "..folderName.."/"..song)
@@ -756,7 +753,20 @@ function cctk.jukebox(folderName)
                 os.shutdown()
                 
             elseif input == "q" then --- Queue specific song
-                queueSpecific()
+                print()
+                print("Song IDs available from 'g' command")
+                print("Enter nothing to cancel")
+                print()
+                write("Enter Song ID > ")
+                input = read()
+                if input ~= "" then
+                    nextSongID = tonumber(input)
+
+                    local file = fs.open(dataFile,"w") ---Writes next song to file
+                    file.write(nextSongID)
+                    file.close()
+                end
+
                 handleInput(song)
 
             elseif input == "g" then --- Get all available songs
@@ -764,14 +774,16 @@ function cctk.jukebox(folderName)
                 local printer = peripheral.find("printer")
                 printer.newPage()
                 local line = 1
-                for i=1, #songs do
+                for i = 1, #songs do
                     printer.setCursorPos(1,line)
-                    printer.write(songs[i])
+                    printer.write(i)
+                    printer.write(". ")
+                    printer.write(songs[i])    
                     line = line +1
-                    
-                    if i%20 == 0 then
+                
+                    if i%21 == 0 then
                         printer.newPage()
-                        line = 0
+                        line = 1  
                     end
 
                 end
