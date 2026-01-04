@@ -159,10 +159,8 @@ function cctk.fuelCheck(fuelMinimum, fuelSlots)
     end
 end
 
-function cctk.mineSquare(width, height, direction)
+function cctk.mineTunnel(width, height, direction)
     
-    local cctk = cctk
-
     ---Failsafes
     if type(height) ~= "number" or height % 2 ~= 0 then
         height = 2
@@ -242,6 +240,83 @@ function cctk.mineSquare(width, height, direction)
             cctk.turnRight()
         end
     end
+    cctk.forward()
+end
+
+function cctk.mineQuarry(rows, columns, side)
+
+    ---Failsafes
+    if type(rows) ~= "number" then
+        rows = 1
+    end
+
+    if type(columns) ~= "number" then
+        columns = 1
+    end
+
+    if type(side) ~= "string" then ---Accepts: "left" and "right"
+        side = "left"
+    end
+
+    ---Helper Functions
+    local function turn(side, otherSide)
+
+        if side == "left" and otherSide == false then
+            cctk.turnLeft()
+        elseif side == "left" and otherSide == true then
+            cctk.turnRight()
+
+        elseif side == "right" and otherSide == false then
+            cctk.turnRight()
+        elseif side == "right" and otherSide == true then
+            cctk.turnLeft()
+        end
+    end
+
+    local function dig()
+
+        t.dig()
+        t.digDown()
+        cctk.forward()
+        t.digDown()
+    end
+
+    ---Logic
+    for i=1, columns-1 do ---first column
+        dig()
+    end 
+    turn(side, false)
+
+    for i=1, rows-1 do ---first row
+        dig()
+    end
+    turn(side, false)
+
+    for i=1, rows-1 do ---for each column;
+
+        for i=1, columns-1 do ---mines column down from where it is
+            dig()
+        end
+
+        cctk.turnRight() cctk.turnRight() --- rotates 180
+
+        for i=1, columns-1 do ---Goes back up to the top row
+            cctk.forward()
+        end
+
+        turn(side, true) ---moves to the next column
+        cctk.forward()
+        turn(side, true)
+    end
+
+    for i=1, columns-1 do
+        cctk.forward()
+    end
+
+    cctk.turnRight() cctk.turnRight() --- rotates 180
+
+    cctk.down()
+
 end
 
 function cctk.mineTree(replant)
@@ -625,7 +700,7 @@ function cctk.storageFull(slots)
     end      
 end
 
-function cctk.vacumn(X,Y,spin)
+function cctk.vacumn(X,Y,spin) ---UNFINISHED
 
     ---Failsafes
     if type(X) ~= "number" then
@@ -650,7 +725,7 @@ function cctk.vacumn(X,Y,spin)
     end
 end
 
-function cctk.jukebox(folderName)
+function cctk.jukebox(folderName) ---HIGHLY ESOTERIC. READ DOCUMENTATION: https://github.com/Thomas-Duggan/CCTurtleKit/tree/main
 
     ---Local Global Variables
     local dataFile = "df.txt" 
