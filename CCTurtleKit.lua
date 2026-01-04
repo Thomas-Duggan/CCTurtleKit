@@ -710,7 +710,14 @@ function cctk.jukebox(folderName)
     ---Helper Functions
     local function play(song)
         local speaker = peripheral.find("speaker")
-        shell.run("speaker play "..folderName.."/"..song)
+
+        print(speaker)
+        if speaker ~= nil then
+            shell.run("speaker play "..folderName.."/"..song)
+        else
+            shell.run("clear")
+            print("SPEAKER NOT CONNECTED")
+        end
     end
 
     local function handleInput(song)
@@ -735,7 +742,7 @@ function cctk.jukebox(folderName)
 
 
             if input == "n" then --- Next Song
-                os.reboot()
+                    os.reboot()
 
             elseif input == "r" then --- queue current song
                 local file = fs.open(dataFile,"w") 
@@ -785,7 +792,6 @@ function cctk.jukebox(folderName)
                         printer.newPage()
                         line = 1  
                     end
-
                 end
                 sleep(1)
                 print(" Done!")
@@ -798,7 +804,7 @@ function cctk.jukebox(folderName)
                 print("(Your queue has been saved)")
                 print()
                 print("      --======= DISREGARD ERROR: =======--")
-                jukebox.closed() --Fake function that fails at runtime, forcing the terminal to open
+                jukebox.closed() --FAKE FUNCTION that fails at runtime, forcing the terminal to open
 
             else
                 print(" Input unknown")
@@ -811,18 +817,11 @@ function cctk.jukebox(folderName)
     local function display(song, songLength)
         local monitor = peripheral.find("monitor")
         if monitor ~= nil then
+
             local cursorY = 1
-
             local splicedSongName = {}
-            for i=1, #song do                
-                splicedSongName[i] = song:sub(i,i)
-            end
-            for i = 1, 6 do
-                table.remove(splicedSongName, #splicedSongName)
-            end
-            splicedSongName[#splicedSongName+1] = ' '
-
-            monitor.clear()
+            local minutesTotal = math.floor(songLength / 60)
+            local secondsTotal = math.floor(songLength % 60)
 
             local function mPrint(text)
                 monitor.setCursorPos(1, cursorY)
@@ -830,8 +829,15 @@ function cctk.jukebox(folderName)
                 cursorY = cursorY + 1
             end
 
-            local minutesTotal = math.floor(songLength / 60)
-            local secondsTotal = math.floor(songLength % 60)
+            monitor.clear()
+
+            for i=1, #song do                
+                splicedSongName[i] = song:sub(i,i)
+            end
+            for i = 1, 6 do
+                table.remove(splicedSongName, #splicedSongName)
+            end
+            splicedSongName[#splicedSongName+1] = ' '
 
             for timeElapsed = 1, (songLength +6)*2 do
                 local progressRatio = (timeElapsed/2)/songLength
@@ -865,8 +871,10 @@ function cctk.jukebox(folderName)
                 mPrint("")
                 mPrint("Up next: "..songs[nextSongID])
 
-                local first = table.remove(splicedSongName, 1) --shifts song name to imitate scrolling
-                table.insert(splicedSongName, first)
+                if #splicedSongName > 30 then
+                    local first = table.remove(splicedSongName, 1) --shifts song name to imitate scrolling
+                    table.insert(splicedSongName, first)
+                end
                 
                 cursorY = 1
                 sleep(0.5)
@@ -879,12 +887,13 @@ function cctk.jukebox(folderName)
 
 
     ---Logic
+    shell.run("clear")
+
     for i, file in ipairs(fs.list(folderName)) do ---Saves songs + files to list
         if file:match("%.dfpwm$") then
             table.insert(songs, file)
         end
     end
-    print(#songs.." songs loaded")
 
     if fs.exists(dataFile) == false then ---Failsafe in case file DNE
         print()
@@ -916,8 +925,15 @@ function cctk.jukebox(folderName)
         file.close()
 
         -- Determining song length
-        --print(songs[songID]) --FOR TESTING ONLY
-        --print(folderName.."/"..songs[songID]) --FOR TESTING ONLY
+        print("The following file cannot be played:")
+        print(songs[songID])
+        print('')
+        print("Most likely reasons:")
+        print(" - Wrong file type (.dfpwm extension is missing)")
+        print(" - Unrecognized characters (look for '?'s above)")
+        print('')
+        print("To disregard the error, run 'reboot' command")
+        print('')
         local f = fs.open(folderName.."/"..songs[songID], "rb")
         local size = -1
         while f.read(16384) do
