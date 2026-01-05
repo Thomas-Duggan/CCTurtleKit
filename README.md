@@ -76,9 +76,17 @@ Physical layout: A chest directly to the right of the turtle. Make sure the turt
 
 </details>
 
-## Implementation Examples Images
+## Implementation Images
 <details>
 <summary>Click me!</summary>
+  
+### Automatic Tree Farm
+
+---
+### Automatic Vein Miner
+
+---
+### Jukebox / Music Player
 
 </details>
 
