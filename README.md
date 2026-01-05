@@ -19,7 +19,9 @@ Note for `startup.lua`: This file is NOT necessary for proper usage of `CCTurtle
 **Preamble: comments (** `---This is a comment` **) do not need to be typed for proper functionality.**
 
 Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with `CCTurtleKit.lua`. However, it is possible to type this verbatim, but it may be difficult to do so.
-  
+
+---
+
 ### Automatic Tree Farm
   
 ```
@@ -41,6 +43,8 @@ end
 Inventory layout: Slot 1: Saplings (NOT DARK OAK), Slots 2-3: Bone meal; Slot 16: Coal 
 
 Physical layout: A dirt block in front and down 1 block for the sapling and a chest directly behind the turtle. Make sure the turtle has a diamond axe.
+
+---
 
 ### Automatic Vein Miner
 
@@ -69,6 +73,9 @@ Inventory layout: Slots 13-16: Coal
 
 Physical layout: A chest directly to the right of the turtle. Make sure the turtle has a diamond pickaxe.
 
+---
+
+### Jukebox / Music Player
 
 </details>
 
