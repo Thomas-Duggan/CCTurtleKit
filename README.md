@@ -17,7 +17,7 @@ Note for `startup.lua`: This file is NOT necessary for proper usage of `CCTurtle
   
 **Preamble: comments (** `---This is a comment` **) do not need to be typed for proper functionality.**
 
-Its best to paste these into a .txt file, rename it to a .lua file, then import it like you did with `CCTurtleKit.lua`. However, it is possible to type this verbatim, but it may be difficult to do so.
+It's best to paste these into a .txt file, rename it to a .lua file, then import it like you did with `CCTurtleKit.lua`. However, it is possible to type this verbatim, but it may be difficult to do so.
 
 ---
 ### Automatic Tree Farm
@@ -76,6 +76,11 @@ Physical layout: A chest directly to the right of the turtle. Make sure the turt
 
 </details>
 
+## Implementation Examples Images
+<details>
+<summary>Click me!</summary>
+
+</details>
 
 ## Copyright
 
