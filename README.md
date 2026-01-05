@@ -52,9 +52,9 @@ Physical layout: A dirt block in front and down 1 block for the sapling and a ch
 local cctk = require("CCTurtleKit")
 
 local usedSlots = {1,  2,  3,  4,
-             5,  6,  7,  8,
-             9,  10, 11, 12,
-             13, 14        }
+                   5,  6,  7,  8,
+                   9,  10, 11, 12,
+                   13, 14        }
 
 local fuelSlots = {15, 16}
 
