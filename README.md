@@ -81,6 +81,8 @@ Physical layout: A chest directly to the right of the turtle. Make sure the turt
   
 ### Automatic Tree Farm
 
+<figure> <img src="https://raw.githubusercontent.com/Thomas-Duggan/project-images/refs/heads/main/DosirakLiFT/DosirakLiFT_Home.png" width=300> <p><strong>^ </strong></p> </figure>
+
 ---
 ### Automatic Vein Miner
 
