@@ -88,6 +88,11 @@ Physical layout: A chest directly to the right of the turtle. Make sure the turt
 ---
 ### Automatic Vein Miner
 
+<figure> <img src="https://github.com/Thomas-Duggan/project-images/blob/main/CCTurtleKit/cctk_auto-vein-miner-physical-layout.png?raw=true" width=300> <p><strong>^ Physical Layout</strong></p> </figure>
+
+
+<figure> <img src="https://github.com/Thomas-Duggan/project-images/blob/main/CCTurtleKit/cctk_auto-vein-miner-inventory-layout.png?raw=true" width=300> <p><strong>^ Inventory Layout</strong></p> </figure>
+
 ---
 ### Jukebox / Music Player
 
