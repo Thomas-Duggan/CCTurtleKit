@@ -96,6 +96,10 @@ Physical layout: A chest directly to the right of the turtle. Make sure the turt
 ---
 ### Jukebox / Music Player
 
+<figure> <img src="https://github.com/Thomas-Duggan/project-images/blob/main/CCTurtleKit/cctk_jukebox-music-player-physical-layout.png?raw=true" width=300> <p><strong>^ Physical Layout</strong></p> </figure>
+
+<figure> <img src="https://github.com/Thomas-Duggan/project-images/blob/main/CCTurtleKit/cctk_jukebox-music-player-inventory-layout.png?raw=true" width=300> <p><strong>^ Inventory Layout</strong></p> </figure>
+
 </details>
 
 ## Copyright
